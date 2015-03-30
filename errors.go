@@ -70,7 +70,7 @@ func (e *Errors) Has(class string) bool {
 // are contained, and it will return true. Otherwise, nothing happens
 // and false is returned.
 // (The value receiver is due to issue 8: https://github.com/mholt/binding/issues/8)
-func (e Errors) Handle(response http.ResponseWriter, process func(Errors) interface{}) bool {
+func (e Errors) Handle(response http.ResponseWriter, process ...func(Errors) interface{}) bool {
 	if e.Len() > 0 {
 		response.Header().Set("Content-Type", jsonContentType)
 		if e.Has(DeserializationError) {
@@ -81,10 +81,10 @@ func (e Errors) Handle(response http.ResponseWriter, process func(Errors) interf
 			response.WriteHeader(StatusUnprocessableEntity)
 		}
 		var errOutput []byte
-		if process == nil {
-			errOutput, _ = json.Marshal(e)
+		if len(process) > 0 {
+			errOutput, _ = json.Marshal(process[0](e))
 		} else {
-			errOutput, _ = json.Marshal(process(e))
+			errOutput, _ = json.Marshal(e)
 		}
 		response.Write(errOutput)
 		return true
