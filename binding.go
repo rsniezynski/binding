@@ -137,7 +137,7 @@ func Validate(req *http.Request, userStruct FieldMapper) Errors {
 	fm := userStruct.FieldMap()
 
 	for fieldPointer, fieldNameOrSpec := range fm {
-		fieldName, fieldHasSpec, fieldSpec := fieldNameAndSpec(fieldNameOrSpec)
+		fieldName, fieldHasSpec, fieldSpec := FieldNameAndSpec(fieldNameOrSpec)
 
 		if !fieldHasSpec {
 			continue
@@ -346,7 +346,7 @@ func bindForm(req *http.Request, userStruct FieldMapper, formData map[string][]s
 
 	for fieldPointer, fieldNameOrSpec := range fm {
 
-		fieldName, _, fieldSpec := fieldNameAndSpec(fieldNameOrSpec)
+		fieldName, _, fieldSpec := FieldNameAndSpec(fieldNameOrSpec)
 		_, isFile := fieldPointer.(**multipart.FileHeader)
 		_, isFileSlice := fieldPointer.(*[]**multipart.FileHeader)
 		strs := formData[fieldName]
@@ -663,7 +663,7 @@ func bindForm(req *http.Request, userStruct FieldMapper, formData map[string][]s
 	return errs
 }
 
-func fieldNameAndSpec(fieldNameOrSpec interface{}) (string, bool, Field) {
+func FieldNameAndSpec(fieldNameOrSpec interface{}) (string, bool, Field) {
 	var fieldName string
 
 	fieldSpec, fieldHasSpec := fieldNameOrSpec.(Field)
